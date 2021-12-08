@@ -1,6 +1,7 @@
 import mediapipe as mp
-from djitellopy import Tello
+from djitellopy.tello import Tello
 import cv2
+import time
 
 debug = True # all indicators
 
@@ -8,9 +9,11 @@ drone = False # change camera to drone or web cam
 
 global KD
 global CD
+global left_right_velocity, for_back_velocity, up_down_velocity, yaw_velocity
+left_right_velocity, for_back_velocity, up_down_velocity, yaw_velocity = 0, 0, 0, 0
 
 global speeds
-speeds = 40
+speeds = 60
 flying = False
 KD = 0
 CD = 0
@@ -20,7 +23,6 @@ CD = 0
 if drone:
     me = Tello()
     me.connect()
-    me.speed = 30
     me.streamon()
 
 
@@ -203,15 +205,15 @@ def get_drone_info():
 
 def rotate(list):
     if h_frame == "right":
-        return speeds
+        return -speeds
     elif h_frame == "left":
-        return speeds*-1
+        return speeds
     else:
         return 0
 
 def up_dw(list):
     if h_frame == "down":
-        return speeds*-1
+        return -speeds
     elif h_frame == "up":
         return speeds
     else:
@@ -222,7 +224,7 @@ def gests(list):
     if gest == "forward":
         return speeds
     elif gest == "backward":
-        return speeds*-1
+        return -speeds
     elif gest == "land":
         me.land()
     elif gest == "flip":
@@ -235,7 +237,7 @@ def lef_rig(list):
     if h_angel == "right":
         return speeds
     elif h_angel == "left":
-        return speeds*-1
+        return -speeds
     else:
         return 0
 
@@ -305,6 +307,7 @@ with mp_face_detection.FaceDetection(model_selection=0, min_detection_confidence
                             left_right_velocity = lef_rig(h_angel)
                             for_back_velocity = gests(gest)
                             me.send_rc_control(left_right_velocity, for_back_velocity, up_down_velocity, yaw_velocity)
+                            time.sleep(0.05)
 
 
                         mp_drawing.draw_landmarks(image, hand, mp_hands.HAND_CONNECTIONS)
