@@ -8,7 +8,7 @@ import time
 #/////////////////////////////////////////////////////////////////
 global debug, drone, control
 debug = True # Shows camera indicators
-drone = True # Switch notebook cam and drone
+drone = False # Switch notebook cam and drone
 control = True # Control drone with keypad
 #/////////////////////////////////////////////////////////////////
 #global rc
@@ -81,7 +81,6 @@ class Hand(Tello):
 
             if drone:
                 self.get_drone_info()
-
 
             self.draw_lines()
 
@@ -172,7 +171,7 @@ class Hand(Tello):
             for_back_velocity = d_speed
             if debug:
                 cv2.putText(self.image, "forward", (int(self.width / 2) + 65, int(self.height / 6) + 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), thickness=2)
-        elif self.fingis[0] == 1 and self.fingis[1] == 1 and self.fingis[2] == 0 and self.fingis[3] == 1 and self.fingis[4] == 1:
+        elif self.fingis[0] == 0 and self.fingis[1] == 1 and self.fingis[2] == 1 and self.fingis[3] == 1 and self.fingis[4] == 1:
             CD += 1
             KD = 0
             if CD >= 20:
