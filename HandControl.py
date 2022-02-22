@@ -8,7 +8,7 @@ import time
 #/////////////////////////////////////////////////////////////////
 global debug, drone, control
 debug = True # Shows camera indicators
-drone = False # Switch notebook cam and drone
+drone = True # Switch notebook cam and drone
 control = True # Control drone with keypad
 #/////////////////////////////////////////////////////////////////
 #global rc
