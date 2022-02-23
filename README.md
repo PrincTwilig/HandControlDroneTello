@@ -50,9 +50,6 @@ d_speed = 50
 
 Ця бібліотека має багато можливостей, зчитування поз, форми лиця і т.д. в проекті буде використано тільки руки.
 
-![](https://google.github.io/mediapipe/images/mobile/hand_tracking_3d_android_gpu.gif)
-> Відстежувані 3D-орієнтири рук представлені точками різних відтінків, причому яскравіші позначають орієнтири ближче до камери.
-
 ![](https://google.github.io/mediapipe/images/mobile/hand_landmarks.png)
 > Точки на руках
 
@@ -153,4 +150,48 @@ def frame_check(self):
 		#Рука в нижній частині екрану
 	elif self.myHands[0][9][1] < int(self.height / 3):
 		#Рука в верхній частині екрану
+```
+
+# Керування дроном Tello
+
+## Підключення до Tello та отримання зображення
+
+Перш за все, потрібно підключитись до вайфай мережі яку роздає Tello, та за допомогою djitellopy підключаємось до дрона, включаємо запис камери та отримуємо зображення.
+
+```Python
+self.connect() #Підключаємось до Tello
+self.streamon() #Запускаємо камеру
+self.image = self.get_frame_read().frame #Отримуємо та зберігаємо зображення в змінній
+```
+
+Ще нам можуть знадобитись деякі данні з дрона, такі як заряд батареї, висота польоту, швидкість. Тому ми їх також отримуємо та зберігаємо.
+
+```Python
+def get_drone_info(self):
+	battery = self.get_battery()
+	height = self.get_height()
+	speed_x = self.get_speed_x()
+	speed_y = self.get_speed_y()
+	speed_z = self.get_speed_z()
+	speed = (speed_x + speed_y + speed_z) / 1.5
+```
+> Середню швидкість обраховуємо за формулою
+
+## Відправка пакетів
+
+У бібліотеці djitellopy вже є встроєний модуль для відправки UDP пакетів на дрон, тому нам потрібно просто відправити данні про рух вперед чи назад, вліво чи вправо, вверх чи вниз та поворот. Також щоб не було затримки між відправкою пакетів через виконання програми, відправку пакетів ми організуєм в окремому потоці.
+
+```Python
+self.send_rc_thread = Thread(target=self.send_rc).start()
+
+def send_rc(self):
+	while True:
+		self.send_rc_control(self.control_speed[0], self.control_speed[1], self.control_speed[2], self.control_speed[3])
+```
+
+Деякі команди мають виконуватись за допомогою TCP запросів, такі як посадка, взліт чи сальто. Відправляємо їх з самого коду.
+
+```Python
+self.land() #Посадка
+self.flip_forward() #Сальто вперед
 ```
