@@ -32,8 +32,11 @@ d_speed = 50
 # Потрібні бібліотеки
 
 > pip install djitellopy
+> 
 > pip install mediapipe
+> 
 > pip install keyboard
+> 
 > pip install opencv-python
 
 + djitellopy  - бібліотека для підключення до дрона, отримання данних з нього та управління.
